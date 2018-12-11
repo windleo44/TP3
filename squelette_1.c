@@ -7,7 +7,7 @@
 
 // Instantiation du tableau
 
-int pile[STACK_SIZE_MAX]={0}; 
+int *pile = NULL;
 
 
 // Ajouter un élément au tableau
@@ -15,26 +15,24 @@ int pile[STACK_SIZE_MAX]={0};
 void push(int x)
 {
   int c=0;
-  while (pile[c] != 0)
+  while (*(pile+c) != 0)
   {
      c++;
   }
-  pile[c]=x;
+  *(pile + c)=x;
 }
 
-
-// Dépiler le dernier élément du tableau
 int pop()
 {
   int c=0;
 
-  while (pile[c] != 0)
+  while (*(pile+c) != 0)
   {
     c++;
   }
 
-  int dernierE=pile[c-1];
-  pile[c-1]=0;
+  int dernierE=*(pile+(c-1));
+  *(pile+c-1)=0;
   return dernierE;
 }
 
@@ -43,9 +41,9 @@ int main(int argc, const char **argv)
 {
   int a;
   int b;
-
+  pile = malloc(STACK_SIZE_MAX);
   for(int i = 1; i < argc; i++){  
-     switch(*argv[i])
+     switch(*(*(argv+i)))
      {
      case '+':
        a=pop();
@@ -68,7 +66,7 @@ int main(int argc, const char **argv)
        push(b/a);
        break;
      default:
-       push(atoi(argv[i]));
+       push(atoi(*(argv+i)));
        break;
      }
   }
