@@ -5,35 +5,57 @@
 
 #define STACK_SIZE_MAX 1024
 
+typedef struct Element Element;
+struct Element
+{
+  int nombre;
+  Element *suivant;
+};
+
+typedef struct Pile Pile;
+struct Pile
+{
+  Element *premier;
+};
+
 // Instantiation du tableau
 
-int *pile = NULL;
-
+Pile *maPile = NULL;
 
 // Ajouter un élément au tableau
 
-void push(int x)
+void push(Pile *pile, int x)
 {
-  int c=0;
-  while (*(pile+c) != 0)
+  Element *nouveau = malloc(sizeof(*nouveau));
+
+  if (pile == NULL || nouveau == NULL)
   {
-     c++;
+    exit(EXIT_FAILURE);
   }
-  *(pile + c)=x;
+
+  nouveau->nombre = x;
+  nouveau->suivant = pile->premier;
+  pile->premier = nouveau;
 }
 
-int pop()
+int pop(Pile *pile)
 {
-  int c=0;
-
-  while (*(pile+c) != 0)
+  if (pile == NULL)
   {
-    c++;
+    exit(EXIT_FAILURE);
   }
 
-  int dernierE=*(pile+(c-1));
-  *(pile+c-1)=0;
-  return dernierE;
+  int nombreDepile = 0;
+  Element *elementDepile = pile->premier;
+
+  if (pile != NULL && pile->premier != NULL)
+  {
+    nombreDepile = elementDepile->nombre;
+    pile->premier = elementDepile->suivant;
+    free(elementDepile);
+  }
+
+  return nombreDepile;
 }
 
 
@@ -41,35 +63,35 @@ int main(int argc, const char **argv)
 {
   int a;
   int b;
-  pile = malloc(STACK_SIZE_MAX);
+  Pile *maPile = malloc(STACK_SIZE_MAX);
   for(int i = 1; i < argc; i++){  
      switch(*(*(argv+i)))
      {
      case '+':
-       a=pop();
-       b=pop();
-       push(a+b);
+       a=pop(maPile);
+       b=pop(maPile);
+       push(maPile,a+b);
        break;
      case '-':
-       a=pop();
-       b=pop();
-       push(b-a);
+       a=pop(maPile);
+       b=pop(maPile);
+       push(maPile,b-a);
        break;
      case '*':
-       a=pop();
-       b=pop();
-       push(a*b);
+       a=pop(maPile);
+       b=pop(maPile);
+       push(maPile,a*b);
        break;
      case '/':
-       a=pop();
-       b=pop();
-       push(b/a);
+       a=pop(maPile);
+       b=pop(maPile);
+       push(maPile,b/a);
        break;
      default:
-       push(atoi(*(argv+i)));
+       push(maPile,atoi(*(argv+i)));
        break;
      }
   }
-  printf("Résultat : %d \n",pop());
+  printf("Résultat : %d \n",pop(maPile));
   return 0;
 }
